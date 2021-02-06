@@ -8,10 +8,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PRAKTIKUM_TOKEN = os.getenv("PRAKTIKUM_TOKEN")
+PRAKTIKUM_TOKEN = os.getenv('PRAKTIKUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
-API_URL = 'https://praktikum.yandex.ru/api/user_api/homework_statuses'
+API_URL = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
 OK_MSG = 'Ревьюеру всё понравилось, можно приступать к следующему уроку.'
 NG_MSG = 'К сожалению в работе нашлись ошибки.'
 
@@ -38,7 +38,6 @@ def get_homework_statuses(current_timestamp):
 
     if current_timestamp is None:
         current_timestamp = int(time.time())
-
     headers = {
         'Authorization': f'OAuth {PRAKTIKUM_TOKEN}',
         }
@@ -48,7 +47,7 @@ def get_homework_statuses(current_timestamp):
 
     try:
         homework_statuses = requests.get(
-            API_URL,
+            url=API_URL,
             timeout=30,
             headers=headers,
             params=params

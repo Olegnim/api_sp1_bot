@@ -57,16 +57,19 @@ def get_homework_statuses(current_timestamp):
             homework_statuses.raise_for_status()
             return homework_statuses.json()
         except requests.exceptions.HTTPError as error:
-            logging.exception(error)                    
+            logging.exception(error)
     except requests.exceptions.HTTPError as errh:
         logging.exception(f"Http Error: {errh}")
+        raise errh
     except requests.exceptions.ConnectionError as errc:
         logging.exception(f'Error Connecting: {errc}')
+        raise errc
     except requests.exceptions.Timeout as errt:
         logging.exception(f'Timeout Error: {errt}')
+        raise errt
     except requests.exceptions.RequestException as err:
         logging.exception(f'Что-то пошло не так {err}')
-
+        raise err
     return homework_statuses.json()
 
 

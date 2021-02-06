@@ -11,7 +11,7 @@ load_dotenv()
 PRAKTIKUM_TOKEN = os.getenv("PRAKTIKUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
-BASE_URL = os.getenv('BASE_URL')
+API_URL = os.getenv('BASE_URL')
 OK_MSG = 'Ревьюеру всё понравилось, можно приступать к следующему уроку.'
 NG_MSG = 'К сожалению в работе нашлись ошибки.'
 
@@ -48,16 +48,11 @@ def get_homework_statuses(current_timestamp):
 
     try:
         homework_statuses = requests.get(
-            BASE_URL,
+            API_URL,
             timeout=30,
             headers=headers,
             params=params
         )
-        #try:
-        #    homework_statuses.raise_for_status()
-        #    return homework_statuses.json()
-        #except requests.exceptions.HTTPError as error:
-        #    logging.exception(error)
     except requests.exceptions.HTTPError as errh:
         logging.exception(f"Http Error: {errh}")
         raise errh

@@ -23,14 +23,16 @@ logging.basicConfig(
 
 
 def parse_homework_status(homework):
+
     homework_name = homework.get('homework_name')
+
     try:
         if homework.get('status') == 'rejected':
             verdict = NG_MSG
         else:
             verdict = OK_MSG
     except KeyError:
-        logging.exception('Ключа "homework_name" не найдено')
+        logging.exception('Ключ "homework_name" не найден')
     return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
@@ -38,6 +40,7 @@ def get_homework_statuses(current_timestamp):
 
     if current_timestamp is None:
         current_timestamp = int(time.time())
+
     headers = {
         'Authorization': f'OAuth {PRAKTIKUM_TOKEN}',
         }

@@ -9,6 +9,8 @@ __pycache__/
 
 .idea
 *.env
+.env
+*.log
 .DS_Store
 .AppleDouble
 .LSOverride

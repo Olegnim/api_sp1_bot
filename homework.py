@@ -37,7 +37,8 @@ def parse_homework_status(homework):
 def get_homework_statuses(current_timestamp):
     headers = {'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'}
     params = {'from_date': current_timestamp}
-
+    if current_timestamp is None:
+        current_timestamp = int(time.time())
     try:
         homework_statuses = requests.get(
             url=BASE_URL,
@@ -48,19 +49,15 @@ def get_homework_statuses(current_timestamp):
     except requests.exceptions.HTTPError as errh:
         msg = f"Http Error: {errh}"
         logging.error(msg)
-        print(msg)
     except requests.exceptions.ConnectionError as errc:
-        msg = f'Error Connecting:{errc}'
+        msg = f'Error Connecting: {errc}'
         logging.error(msg)
-        print(msg)
     except requests.exceptions.Timeout as errt:
         msg = f'Timeout Error: {errt}'
         logging.error(msg)
-        print(msg)
     except requests.exceptions.RequestException as err:
         msg = f'Что-то пошло не так {err}'
         logging.error(msg)
-        print(msg)
 
     return homework_statuses.json()
 

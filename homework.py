@@ -42,22 +42,17 @@ def get_homework_statuses(current_timestamp):
     try:
         homework_statuses = requests.get(
             url=BASE_URL,
-            timeout=30,
             headers=headers,
             params=params
         )
     except requests.exceptions.HTTPError as errh:
-        msg = f"Http Error: {errh}"
-        logging.error(msg)
+        logging.exception(f"Http Error: {errh}")
     except requests.exceptions.ConnectionError as errc:
-        msg = f'Error Connecting: {errc}'
-        logging.error(msg)
+        logging.exception(f'Error Connecting: {errc}')
     except requests.exceptions.Timeout as errt:
-        msg = f'Timeout Error: {errt}'
-        logging.error(msg)
+        logging.exception(f'Timeout Error: {errt}')
     except requests.exceptions.RequestException as err:
-        msg = f'Что-то пошло не так {err}'
-        logging.error(msg)
+        logging.exception(f'Что-то пошло не так {err}')
 
     return homework_statuses.json()
 

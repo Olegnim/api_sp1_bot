@@ -24,12 +24,13 @@ logging.basicConfig(
 
 def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
-
-    if homework.get('status') == 'rejected':
-        verdict = NG_MSG
-    else:
-        verdict = OK_MSG
-
+    try:
+        if homework.get('status') == 'rejected':
+            verdict = NG_MSG
+        else:
+            verdict = OK_MSG
+    except KeyError:
+        logging.exception('Ключа "homework_name" не найдено')
     return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
@@ -40,7 +41,7 @@ def get_homework_statuses(current_timestamp):
     try:
         homework_statuses = requests.get(
             url=BASE_URL,
-            timeout=5,
+            timeout=30,
             headers=headers,
             params=params
         )

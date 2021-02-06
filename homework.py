@@ -40,10 +40,10 @@ def get_homework_statuses(current_timestamp):
         current_timestamp = int(time.time())
 
     headers = {
-        'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'
+        'Authorization': f'OAuth {PRAKTIKUM_TOKEN}',
         }
     params = {
-        'from_date': current_timestamp
+        'from_date': current_timestamp,
         }
 
     try:
@@ -53,11 +53,11 @@ def get_homework_statuses(current_timestamp):
             headers=headers,
             params=params
         )
-        try:
-            homework_statuses.raise_for_status()
-            return homework_statuses.json()
-        except requests.exceptions.HTTPError as error:
-            logging.exception(error)
+        #try:
+        #    homework_statuses.raise_for_status()
+        #    return homework_statuses.json()
+        #except requests.exceptions.HTTPError as error:
+        #    logging.exception(error)
     except requests.exceptions.HTTPError as errh:
         logging.exception(f"Http Error: {errh}")
         raise errh

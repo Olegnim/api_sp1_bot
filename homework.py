@@ -12,6 +12,8 @@ PRAKTIKUM_TOKEN = os.getenv("PRAKTIKUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 BASE_URL = os.getenv('BASE_URL')
+OK_MSG = 'Ревьюеру всё понравилось, можно приступать к следующему уроку.'
+NG_MSG = 'К сожалению в работе нашлись ошибки.'
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -24,10 +26,10 @@ def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
 
     if homework.get('status') == 'rejected':
-        verdict = 'К сожалению в работе нашлись ошибки.'
+        verdict = NG_MSG
     else:
-        verdict = \
-            'Ревьюеру всё понравилось, можно приступать к следующему уроку.'
+        verdict = OK_MSG
+
     return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 

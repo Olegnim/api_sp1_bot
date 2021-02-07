@@ -34,7 +34,7 @@ def parse_homework_status(homework):
         'Error': 'Something wrong!',
     }
     homework_name = homework.get('homework_name')
-    status = homework.get('statu_s')
+    status = homework.get('status')
     if homework_name is None:
         logging.error('Ошибка получения названия работы')
         return err_return
@@ -49,12 +49,11 @@ def get_homework_statuses(current_timestamp):
     err_return = {}
     if current_timestamp is None:
         current_timestamp = int(time.time())
-
     headers = {
-        'Authorization': f'OAuth {PRAKTIKUM_TOKEN}',
+        'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'
         }
     params = {
-        'from_date': current_timestamp,
+        'from_date': current_timestamp
         }
     API_URL = BASE_URL+'{}'.format(METHOD_API_1)
     try:
@@ -97,7 +96,7 @@ def main():
         try:
             new_homework = get_homework_statuses(current_timestamp)
             if new_homework == dict():
-                msg = f'Ошибка! Нет данных!'
+                msg = 'Ошибка! Нет данных!'
                 logging.error(msg)
                 send_message(message=msg, bot_client=bot)
             if new_homework.get('homeworks'):

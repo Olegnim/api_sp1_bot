@@ -8,12 +8,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PRAKTIKUM_TOKEN = os.getenv('PRAKTIKUM_TOKEN')
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
-API_URL = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
-OK_MSG = 'Ревьюеру всё понравилось, можно приступать к следующему уроку.'
-NG_MSG = 'К сожалению в работе нашлись ошибки.'
+PRAKTIKUM_TOKEN = os.environ.get('PRAKTIKUM_TOKEN')
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
+METHOD_API_1 = 'homework_statuses/'
+BASE_URL = 'https://praktikum.yandex.ru/api/user_api/'
+MESSAGE = {
+    'OK': 'Ревьюеру всё понравилось, можно приступать к следующему уроку.',
+    'NG': 'К сожалению в работе нашлись ошибки.',
+}
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -28,9 +31,9 @@ def parse_homework_status(homework):
 
     try:
         if homework.get('status') == 'rejected':
-            verdict = NG_MSG
+            verdict = MESSAGE['NG']
         else:
-            verdict = OK_MSG
+            verdict = MESSAGE['OK']
     except KeyError:
         logging.exception('Ключ "homework_name" не найден')
     return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
@@ -47,7 +50,7 @@ def get_homework_statuses(current_timestamp):
     params = {
         'from_date': current_timestamp,
         }
-
+    API_URL = BASE_URL+'{}'.format(METHOD_API_1)
     try:
         homework_statuses = requests.get(
             url=API_URL,
@@ -79,7 +82,8 @@ def main():
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     logging.debug('Телеграмм бот запущен')
 
-    current_timestamp = int(time.time())
+    #current_timestamp = int(time.time())
+    current_timestamp = 0
 
     while True:
         try:
@@ -92,8 +96,7 @@ def main():
             time.sleep(1800)
 
         except Exception as e:
-            msg = f'Бот столкнулся с ошибкой: {e}'
-            print(msg)
+            logging.error(f'Бот столкнулся с ошибкой: {e}')
             send_message(message=msg, bot_client=bot)
             time.sleep(5)
 

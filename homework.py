@@ -49,12 +49,8 @@ def get_homework_statuses(current_timestamp):
     err_return = {}
     if current_timestamp is None:
         current_timestamp = int(time.time())
-    headers = {
-        'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'
-        }
-    params = {
-        'from_date': current_timestamp
-        }
+    headers = {'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'}
+    params = {'from_date': current_timestamp}
     API_URL = BASE_URL+'{}'.format(METHOD_API_1)
     try:
         homework_statuses = requests.get(

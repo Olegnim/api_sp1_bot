@@ -13,10 +13,9 @@ TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 METHOD_API_1 = 'homework_statuses/'
 BASE_URL = 'https://praktikum.yandex.ru/api/user_api/'
-MESSAGE = {
-    'OK': 'Ревьюеру всё понравилось, можно приступать к следующему уроку.',
-    'NG': 'К сожалению в работе нашлись ошибки.',
-}
+MSG_APPROVED = 'Ревьюеру всё понравилось, можно приступать к следующему уроку.'
+MSG_REVIEWING = 'Работа пока находится на проверке.'
+MSG_REJECTED = 'К сожалению в работе нашлись ошибки.'
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -26,16 +25,21 @@ logging.basicConfig(
 
 
 def parse_homework_status(homework):
-
+    status_verdict = {
+        'reviewing': MSG_REVIEWING,
+        'approved': MSG_APPROVED,
+        'rejected': MSG_REJECTED,
+    }
+    err = {}
     homework_name = homework.get('homework_name')
-
-    try:
-        if homework.get('status') == 'rejected':
-            verdict = MESSAGE['NG']
-        else:
-            verdict = MESSAGE['OK']
-    except KeyError:
-        logging.exception('Ключ "homework_name" не найден')
+    status = homework.get('status')
+    if homework_name is None:
+        logging.error('Ошибка получения названия работы')
+        return err
+    if status_verdict.get(status) is None:
+        logging.error('Ошибка! Нет такого статуса')
+        return err
+    verdict = status_verdict.get(status)
     return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
@@ -79,8 +83,11 @@ def send_message(message, bot_client):
 
 
 def main():
-    bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    logging.debug('Телеграмм бот запущен')
+    try:
+        bot = telegram.Bot(token=TELEGRAM_TOKEN)
+        logging.debug('Телеграмм бот запущен')
+    except KeyError as e:
+        logging.error(f'Ошибка инициализации телеграмм бота: {e}')
 
     #current_timestamp = int(time.time())
     current_timestamp = 0
@@ -96,7 +103,8 @@ def main():
             time.sleep(1800)
 
         except Exception as e:
-            logging.error(f'Бот столкнулся с ошибкой: {e}')
+            msg = f'Бот столкнулся с ошибкой: {e}'
+            logging.error(msg)
             send_message(message=msg, bot_client=bot)
             time.sleep(5)
 

@@ -99,7 +99,7 @@ def main():
             if new_homework == dict():
                 msg = f'Ошибка! Нет данных!'
                 logging.error(msg)
-                send_message(message=msg, bot_client=bot)                
+                send_message(message=msg, bot_client=bot)
             if new_homework.get('homeworks'):
                 send_message(parse_homework_status(
                     new_homework.get('homeworks')[0]), bot_client=bot)

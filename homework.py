@@ -30,21 +30,23 @@ def parse_homework_status(homework):
         'approved': MSG_APPROVED,
         'rejected': MSG_REJECTED,
     }
-    err = {}
+    err_return = {
+        'Error': 'Something wrong!',
+    }
     homework_name = homework.get('homework_name')
-    status = homework.get('status')
+    status = homework.get('statu_s')
     if homework_name is None:
         logging.error('Ошибка получения названия работы')
-        return err
+        return err_return
     if status_verdict.get(status) is None:
         logging.error('Ошибка! Нет такого статуса')
-        return err
+        return err_return
     verdict = status_verdict.get(status)
     return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
 def get_homework_statuses(current_timestamp):
-
+    err_return = {}
     if current_timestamp is None:
         current_timestamp = int(time.time())
 
@@ -64,16 +66,16 @@ def get_homework_statuses(current_timestamp):
         )
     except requests.exceptions.HTTPError as errh:
         logging.exception(f"Http Error: {errh}")
-        raise errh
+        return err_return
     except requests.exceptions.ConnectionError as errc:
         logging.exception(f'Error Connecting: {errc}')
-        raise errc
+        return err_return
     except requests.exceptions.Timeout as errt:
         logging.exception(f'Timeout Error: {errt}')
-        raise errt
+        return err_return
     except requests.exceptions.RequestException as err:
         logging.exception(f'Что-то пошло не так {err}')
-        raise err
+        return err_return
     return homework_statuses.json()
 
 
@@ -85,16 +87,19 @@ def send_message(message, bot_client):
 def main():
     try:
         bot = telegram.Bot(token=TELEGRAM_TOKEN)
-        logging.debug('Телеграмм бот запущен')
-    except KeyError as e:
-        logging.error(f'Ошибка инициализации телеграмм бота: {e}')
+    except Exception:
+        logging.error('Ошибка инициализации телеграмм бота!')
+    logging.debug('Телеграмм бот запущен')
 
-    #current_timestamp = int(time.time())
-    current_timestamp = 0
+    current_timestamp = int(time.time())
 
     while True:
         try:
             new_homework = get_homework_statuses(current_timestamp)
+            if new_homework == dict():
+                msg = f'Ошибка! Нет данных!'
+                logging.error(msg)
+                send_message(message=msg, bot_client=bot)                
             if new_homework.get('homeworks'):
                 send_message(parse_homework_status(
                     new_homework.get('homeworks')[0]), bot_client=bot)

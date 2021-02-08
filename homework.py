@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import time
@@ -30,15 +31,16 @@ def parse_homework_status(homework):
         'approved': MSG_APPROVED,
         'rejected': MSG_REJECTED,
     }
-    err_return = {
-        'Error': 'Something wrong!',
-    }
+    err_return = {}
     homework_name = homework.get('homework_name')
-    status = homework.get('status')
     if homework_name is None:
         logging.error('Ошибка получения названия работы')
         return err_return
+    status = homework.get('status')
     if status_verdict.get(status) is None:
+        if status != '':
+            logging.error('Ошибка! Cтатус не распознан!')
+            return err_return
         logging.error('Ошибка! Нет такого статуса')
         return err_return
     verdict = status_verdict.get(status)
@@ -71,6 +73,9 @@ def get_homework_statuses(current_timestamp):
     except requests.exceptions.RequestException as err:
         logging.exception(f'Что-то пошло не так {err}')
         return err_return
+    except json.JSONDecodeError:
+        logging.exception('Ошибка сериализации JSON!')
+        return err_return
     return homework_statuses.json()
 
 
@@ -96,8 +101,12 @@ def main():
                 logging.error(msg)
                 send_message(message=msg, bot_client=bot)
             if new_homework.get('homeworks'):
-                send_message(parse_homework_status(
-                    new_homework.get('homeworks')[0]), bot_client=bot)
+                new_hw = new_homework.get('homeworks')[0]
+                parse_hw_status = parse_homework_status(new_hw)
+                if parse_hw_status == dict():
+                    send_message('Ошибка получения статуса!', bot_client=bot)
+                else:
+                    send_message(parse_hw_status, bot_client=bot)
             current_timestamp = new_homework.get(
                 'current_date', current_timestamp)
             time.sleep(1800)

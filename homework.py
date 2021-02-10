@@ -9,9 +9,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PRAKTIKUM_TOKEN = os.environ.get('PRAKTIKUM_TOKEN')
-TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
-CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
+PRAKTIKUM_TOKEN = os.environ['PRAKTIKUM_TOKEN']
+TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
+CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
 METHOD_API_1 = 'homework_statuses/'
 BASE_URL = 'https://praktikum.yandex.ru/api/user_api/'
 MSG_APPROVED = 'Ревьюеру всё понравилось, можно приступать к следующему уроку.'
@@ -91,7 +91,8 @@ def main():
         logging.error('Ошибка инициализации телеграмм бота!')
     logging.debug('Телеграмм бот запущен')
 
-    current_timestamp = int(time.time())
+    #current_timestamp = int(time.time())
+    current_timestamp = 0
 
     while True:
         try:
